@@ -316,15 +316,10 @@ int update_devfreq(struct devfreq *devfreq)
 	if (!devfreq->governor)
 		return -EINVAL;
 
-	if (devfreq->max_boost) {
-		/* Use the max freq for max boosts */
-		freq = ULONG_MAX;
-	} else {
-		/* Reevaluate the proper frequency */
-		err = devfreq->governor->get_target_freq(devfreq, &freq);
-		if (err)
-			return err;
-	}
+	/* Reevaluate the proper frequency */
+	err = devfreq->governor->get_target_freq(devfreq, &freq);
+	if (err)
+		return err;
 
 #if defined(CONFIG_EXYNOS_DVFS_MANAGER) && defined(CONFIG_ARM_EXYNOS_DEVFREQ)
 	err = find_exynos_devfreq_dm_type(devfreq->dev.parent, &dm_type);
@@ -1188,68 +1183,6 @@ static ssize_t polling_interval_store(struct device *dev,
 	return ret;
 }
 static DEVICE_ATTR_RW(polling_interval);
-
-static ssize_t min_freq_store(struct device *dev, struct device_attribute *attr,
-			      const char *buf, size_t count)
-{
-	struct devfreq *df = to_devfreq(dev);
-	unsigned long value;
-	int ret;
-	unsigned long max;
-
-	/* Minfreq is managed by devfreq_boost */
-	if (df->is_boost_device)
-		return count;
-
-	ret = sscanf(buf, "%lu", &value);
-	if (ret != 1)
-		return -EINVAL;
-
-	mutex_lock(&df->event_lock);
-	mutex_lock(&df->lock);
-	max = df->max_freq;
-	if (value && max && value > max) {
-		ret = -EINVAL;
-		goto unlock;
-	}
-
-	df->min_freq = value;
-	update_devfreq(df);
-	ret = count;
-unlock:
-	mutex_unlock(&df->lock);
-	mutex_unlock(&df->event_lock);
-	return ret;
-}
-
-static ssize_t max_freq_store(struct device *dev, struct device_attribute *attr,
-			      const char *buf, size_t count)
-{
-	struct devfreq *df = to_devfreq(dev);
-	unsigned long value;
-	int ret;
-	unsigned long min;
-
-	ret = sscanf(buf, "%lu", &value);
-	if (ret != 1)
-		return -EINVAL;
-
-	mutex_lock(&df->event_lock);
-	mutex_lock(&df->lock);
-	min = df->min_freq;
-	if (value && min && value < min) {
-		ret = -EINVAL;
-		goto unlock;
-	}
-
-	df->max_freq = value;
-	update_devfreq(df);
-	ret = count;
-unlock:
-	mutex_unlock(&df->lock);
-	mutex_unlock(&df->event_lock);
-	return ret;
-}
 
 #define show_one(name)						\
 static ssize_t name##_show					\
