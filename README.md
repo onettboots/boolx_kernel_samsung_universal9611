@@ -1,18 +1,13 @@
 
 <h1 align="center">
-  <br>
-  <img src="https://i.ibb.co/LYYJzJC/logo.jpg" alt="Markdownify" width="2048">
-  <br>
-  GrassKernel
-  <br>
+  Bool-X kernel
 </h1>
 
-<h4 align="center">A custom kernel for the Exynos9611 devices.</h4>
+<h4 align="center">Based on Grass Kernel source</h4>
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
   <a href="#how-to-build">How To Build</a> •
-  <a href="#how-to-flash">How To Flash</a> •
   <a href="#credits">Credits</a>
 </p>
 
@@ -20,12 +15,12 @@
 
 * Disable Samsung securities, debug drivers, etc modifications
 * Checkout and rebase against Android common kernel source, Removing Samsung additions to drivers like ext4,f2fs and more
-* Compiled with bleeding edge Neutron Clang 17, with full LLVM binutils, LTO (Link time optimization) and -O3  
 * Import Erofs, Incremental FS, BinderFS and several backports.
 * Supports DeX touchpad for corresponding OneUI ports that have DeX ported.
 * Lot of debug codes/configuration Samsung added are removed.
 * Added [wireguard](https://www.wireguard.com/) driver, an open-source VPN driver in-kernel
 * Added [KernelSU](https://kernelsu.org/)
+* Power and stability
 
 ## How To Build
 
@@ -55,13 +50,10 @@ $ DEVICE=m21 ./build_kernel.sh aosp # (for M21, AOSP)
 
 After build the image of the kernel will be in out/arch/arm64/boot/Image
 
-## How To Flash
-
-After a successful build, you can see the scripts/packaging/Grass*.zip archive.
-This is your kernel. Just flash it via TWRP or adb sideload
-
 ## Credits
 
+- [cat658011](https://github.com/cat658011)
+- [onettboots](https://github.com/onettboots)
 - [roynatech2544](https://github.com/roynatech2544)
 - [Samsung Open Source](https://opensource.samsung.com/)
 - [Android Open Source Project](https://source.android.com/)
